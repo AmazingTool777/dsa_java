@@ -34,20 +34,18 @@ public class BinaryHeapListPriorityQueue<T extends Comparable<T>> {
 
     public T dequeue() {
         T topItem = peek();
-        int i = 0;
+        int i = 0, lastIndex = items.size() - 1, li, ri;
 
         items.set(0, items.getLast());
         while (true) {
-            int li = 2 * i + 1;
-            if (li >= items.size()) break;
-            if (items.get(i).compareTo(items.get(li)) < 0) {
+            li = 2 * i + 1;
+            if (li <= lastIndex && items.get(i).compareTo(items.get(li)) < 0) {
                 swap(i, li);
                 i = li;
                 continue;
             }
-            int ri = 2 * i + 2;
-            if (ri >= items.size()) break;
-            if (items.get(i).compareTo(items.get(ri)) < 0) {
+            ri = 2 * i + 2;
+            if (ri <= lastIndex && items.get(i).compareTo(items.get(ri)) < 0) {
                 swap(i, ri);
                 i = ri;
                 continue;

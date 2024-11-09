@@ -40,19 +40,20 @@ public class BinaryHeapArrayPriorityQueue {
     private void shiftDown(int index) {
         int i = index, li, ri;
 
-        while (i < lastIndex) {
+        while (true) {
             li = index * 2 + 1;
-            ri = index * 2 + 2;
-
-            if (items[li] > items[i]) {
+            if (li <= lastIndex && items[li] > items[i]) {
                 swap(i, li);
                 i = li;
-            } else if (items[ri] > items[i]) {
+                continue;
+            }
+            ri = index * 2 + 2;
+            if (ri <= lastIndex && items[ri] > items[i]) {
                 swap(i, ri);
                 i = ri;
-            } else {
-                break;
+                continue;
             }
+            break;
         }
     }
 
