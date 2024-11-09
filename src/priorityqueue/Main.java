@@ -4,7 +4,8 @@ public class Main {
     public static void main(String[] args) {
         // array();
         // linkedList();
-        binaryHeapArray();
+        // binaryHeapArray();
+        binaryHeapList();
     }
 
     public static void array() {
@@ -47,6 +48,22 @@ public class Main {
         pq.enqueue(1);
         pq.enqueue(4);
         pq.enqueue(5);
+
+        System.out.println("The highest priority value is: %.1f".formatted(pq.peek()));
+
+        while (!pq.isEmpty()) {
+            System.out.println(pq.dequeue());
+        }
+    }
+
+    public static void binaryHeapList() {
+        BinaryHeapListPriorityQueue<Double> pq = new BinaryHeapListPriorityQueue();
+
+        pq.enqueue(2.0);
+        pq.enqueue(3.0);
+        pq.enqueue(1.0);
+        pq.enqueue(4.0);
+        pq.enqueue(5.0);
 
         System.out.println("The highest priority value is: %.1f".formatted(pq.peek()));
 
