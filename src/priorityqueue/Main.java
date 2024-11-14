@@ -3,9 +3,9 @@ package priorityqueue;
 public class Main {
     public static void main(String[] args) {
         // array();
-        // linkedList();
+        linkedList();
         // binaryHeapArray();
-        binaryHeapList();
+        // binaryHeapList();
     }
 
     public static void array() {

@@ -29,6 +29,7 @@ public class LinkedListPriorityQueue {
         // If initially empty, only the head is pushed to the list
         if (head == null) {
             head = node;
+            return;
         }
 
         // If the new node has a higher priority than the head,
@@ -36,6 +37,7 @@ public class LinkedListPriorityQueue {
         if (head.priority <= priority && (head.priority < priority || head.value < value)) {
             node.next = head;
             head = node;
+            return;
         }
 
         // Looking for the next node than has a lower priority than the new node
