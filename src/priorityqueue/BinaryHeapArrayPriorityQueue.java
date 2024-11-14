@@ -1,7 +1,7 @@
 package priorityqueue;
 
 public class BinaryHeapArrayPriorityQueue {
-    private double[] items = new double[1000];
+    private final double[] items = new double[1000];
 
     private int lastIndex = -1;
 
@@ -15,45 +15,41 @@ public class BinaryHeapArrayPriorityQueue {
         items[i2] = temp;
     }
 
-    private void shiftUp(int index) {
-        int i = index, pi;
-        while (i > 0) {
+    private void siftUp(int index) {
+        int i = index, pi = getParentIndex(i);
+        while (pi >= 0 && items[i] > items[pi]) {
+            swap(i, pi);
+            i = pi;
             pi = getParentIndex(i);
-            if (items[i] > items[pi]) {
-                swap(i, pi);
-                i = pi;
-            } else {
-                break;
-            }
         }
     }
 
     public void enqueue(double item) {
         items[++lastIndex] = item;
-        shiftUp(lastIndex);
+        siftUp(lastIndex);
     }
 
     public double peek() {
         return items[0];
     }
 
-    private void shiftDown(int index) {
-        int i = index, li, ri;
+    private int getLeftChildIndex(int i) {
+        return i * 2 + 1;
+    }
 
-        while (true) {
-            li = index * 2 + 1;
-            if (li <= lastIndex && items[li] > items[i]) {
-                swap(i, li);
-                i = li;
-                continue;
-            }
-            ri = index * 2 + 2;
-            if (ri <= lastIndex && items[ri] > items[i]) {
-                swap(i, ri);
-                i = ri;
-                continue;
-            }
-            break;
+    private int getRightChildIndex(int i) {
+        return i * 2 + 2;
+    }
+
+    private void siftDown(int index) {
+        int i = index, li = getLeftChildIndex(i), ri = getRightChildIndex(i), childIndex;
+
+        while ((li <= lastIndex && items[li] > items[i]) || (ri <= lastIndex && items[ri] > items[i])) {
+            childIndex = li == lastIndex || items[li] > items[i] ? li : ri;
+            swap(i, childIndex);
+            i = childIndex;
+            li = getLeftChildIndex(i);
+            ri = getLeftChildIndex(i);
         }
     }
 
@@ -61,7 +57,7 @@ public class BinaryHeapArrayPriorityQueue {
         double topItem = peek();
 
         items[0] = items[lastIndex];
-        shiftDown(0);
+        siftDown(0);
 
         items[lastIndex] = 0;
         lastIndex--;
@@ -77,16 +73,16 @@ public class BinaryHeapArrayPriorityQueue {
         double oldPriority = items[i];
         items[i] = priority;
         if (oldPriority < priority) {
-            shiftUp(i);
+            siftUp(i);
         } else {
-            shiftDown(i);
+            siftDown(i);
         }
     }
 
     public double remove(int i) {
         double removed = items[i];
         items[i] = peek() + 1;
-        shiftUp(i);
+        siftUp(i);
         dequeue();
         return removed;
     }

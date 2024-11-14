@@ -13,18 +13,14 @@ public class BinaryHeapListPriorityQueue<T extends Comparable<T>> {
     }
 
     public void enqueue(T item) {
-        int i = items.size(), pi;
+        int i = items.size(), pi = (i - 1) / 2;
 
         items.add(item);
 
-        while (i > 0) {
+        while (pi >= 0 && items.get(i).compareTo(items.get(pi)) > 0) {
+            swap(i, pi);
+            i = pi;
             pi = (i - 1) / 2;
-            if (items.get(i).compareTo(items.get(pi)) >= 0) {
-                swap(i, pi);
-                i = pi;
-                continue;
-            }
-            break;
         }
     }
 
@@ -34,23 +30,17 @@ public class BinaryHeapListPriorityQueue<T extends Comparable<T>> {
 
     public T dequeue() {
         T topItem = peek();
-        int i = 0, lastIndex = items.size() - 1, li, ri;
+        int i = 0, lastIndex = items.size() - 1, li = i * 2 + 1, ri = i * 2 + 2, childIndex;
 
         items.set(0, items.getLast());
-        while (true) {
-            li = 2 * i + 1;
-            if (li <= lastIndex && items.get(i).compareTo(items.get(li)) < 0) {
-                swap(i, li);
-                i = li;
-                continue;
-            }
-            ri = 2 * i + 2;
-            if (ri <= lastIndex && items.get(i).compareTo(items.get(ri)) < 0) {
-                swap(i, ri);
-                i = ri;
-                continue;
-            }
-            break;
+
+        while ((li <= lastIndex && items.get(i).compareTo(items.get(li)) < 0)
+                || (ri <= lastIndex && items.get(i).compareTo(items.get(ri)) < 0)) {
+            childIndex = li == lastIndex || items.get(i).compareTo(items.get(li)) < 0 ? li : ri;
+            swap(i, childIndex);
+            i = childIndex;
+            li = i * 2 + 1;
+            ri = i * 2 + 2;
         }
 
         items.removeLast();
