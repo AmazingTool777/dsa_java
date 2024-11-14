@@ -30,7 +30,7 @@ public class BinaryHeapListPriorityQueue<T extends Comparable<T>> {
 
     public T dequeue() {
         T topItem = peek();
-        int i = 0, lastIndex = items.size() - 1, li = i * 2 + 1, ri = i * 2 + 2, childIndex;
+        int i = 0, lastIndex = items.size() - 1, li = 1, ri = 2, childIndex;
 
         items.set(0, items.getLast());
 

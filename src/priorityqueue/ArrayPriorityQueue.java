@@ -5,7 +5,7 @@ package priorityqueue;
  * Items that have higher values have higher priorities.
  */
 public class ArrayPriorityQueue {
-    public class Item {
+    public static class Item {
         double value;
         int priority;
 
@@ -15,7 +15,7 @@ public class ArrayPriorityQueue {
         }
     }
 
-    private Item[] items = new Item[1000];
+    private final Item[] items = new Item[1000];
 
     private int lastIndex = -1;
 
@@ -38,10 +38,8 @@ public class ArrayPriorityQueue {
 
         for (int i = 0; i <= lastIndex; i++) {
             Item item = items[i];
-            if (item.priority > maxPriority) {
-                maxPriority = item.priority;
-                maxI = i;
-            } else if (item.priority == maxPriority && item.value > items[maxPriority].value) {
+            if (item.priority > maxPriority
+                    || (item.priority == maxPriority && item.value > items[maxI].value)) {
                 maxPriority = item.priority;
                 maxI = i;
             }

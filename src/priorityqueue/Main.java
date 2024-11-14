@@ -17,7 +17,7 @@ public class Main {
         pq.enqueue(4, 4);
         pq.enqueue(5, 1);
 
-        System.out.println("The highest priority value is: %.1f".formatted(pq.peek()));
+        System.out.printf("The highest priority value is: %.1f%n", pq.peek());
 
         while (!pq.isEmpty()) {
             System.out.println(pq.dequeue());
@@ -33,7 +33,7 @@ public class Main {
         pq.enqueue(4, 4);
         pq.enqueue(5, 1);
 
-        System.out.println("The highest priority value is: %.1f".formatted(pq.peek()));
+        System.out.printf("The highest priority value is: %.1f%n", pq.peek());
 
         while (!pq.isEmpty()) {
             System.out.println(pq.dequeue());
@@ -49,7 +49,7 @@ public class Main {
         pq.enqueue(4);
         pq.enqueue(5);
 
-        System.out.println("The highest priority value is: %.1f".formatted(pq.peek()));
+        System.out.printf("The highest priority value is: %.1f%n", pq.peek());
 
         while (!pq.isEmpty()) {
             System.out.println(pq.dequeue());
@@ -57,7 +57,7 @@ public class Main {
     }
 
     public static void binaryHeapList() {
-        BinaryHeapListPriorityQueue<Job> pq = new BinaryHeapListPriorityQueue();
+        BinaryHeapListPriorityQueue<Job> pq = new BinaryHeapListPriorityQueue<>();
 
         pq.enqueue(new Job(1));
         pq.enqueue(new Job(2));
@@ -65,27 +65,18 @@ public class Main {
         pq.enqueue(new Job(4));
         pq.enqueue(new Job(5));
 
-        System.out.println("The highest priority value is: %d".formatted(pq.peek().getPriority()));
+        System.out.printf("The highest priority value is: %d%n", pq.peek().priority());
 
         while (!pq.isEmpty()) {
-            System.out.println(pq.dequeue().getPriority());
+            System.out.println(pq.dequeue().priority());
         }
     }
 
-    public static class Job implements Comparable<Job> {
-        private int priority;
-
-        public Job(int priority) {
-            this.priority = priority;
-        }
+    public record Job(int priority) implements Comparable<Job> {
 
         @Override
         public int compareTo(Job job) {
             return priority - job.priority;
-        }
-
-        public int getPriority() {
-            return priority;
         }
     }
 }
