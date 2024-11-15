@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BinaryHeapListPriorityQueue<T extends Comparable<T>> {
-    private final List<T> items = new ArrayList<T>();
+    private final List<T> items = new ArrayList<>();
 
     private void swap(int i1, int i2) {
         T temp = items.get(i1);
@@ -36,7 +36,11 @@ public class BinaryHeapListPriorityQueue<T extends Comparable<T>> {
 
         while ((li <= lastIndex && items.get(i).compareTo(items.get(li)) < 0)
                 || (ri <= lastIndex && items.get(i).compareTo(items.get(ri)) < 0)) {
-            childIndex = li == lastIndex || items.get(i).compareTo(items.get(li)) < 0 ? li : ri;
+            childIndex = li == lastIndex
+                    || items.get(i).compareTo(items.get(ri)) >= 0
+                    || items.get(li).compareTo(items.get(ri)) > 0
+                    ? li
+                    : ri;
             swap(i, childIndex);
             i = childIndex;
             li = i * 2 + 1;

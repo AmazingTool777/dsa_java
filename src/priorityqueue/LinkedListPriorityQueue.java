@@ -52,13 +52,17 @@ public class LinkedListPriorityQueue {
         current.next = node;
     }
 
-    public double dequeue() {
-        double value = head.value;
-        head = head.next;
-        return value;
+    public void enqueue(Node node) {
+        enqueue(node.value, node.priority);
     }
 
-    public double peek() {
-        return head.value;
+    public Node dequeue() {
+        Node dequeued = head;
+        head = head.next;
+        return dequeued;
+    }
+
+    public Node peek() {
+        return head;
     }
 }

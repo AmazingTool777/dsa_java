@@ -45,11 +45,11 @@ public class BinaryHeapArrayPriorityQueue {
         int i = index, li = getLeftChildIndex(i), ri = getRightChildIndex(i), childIndex;
 
         while ((li <= lastIndex && items[li] > items[i]) || (ri <= lastIndex && items[ri] > items[i])) {
-            childIndex = li == lastIndex || items[li] > items[i] ? li : ri;
+            childIndex = li == lastIndex || items[ri] <= items[i] || items[li] > items[ri] ? li : ri;
             swap(i, childIndex);
             i = childIndex;
             li = getLeftChildIndex(i);
-            ri = getLeftChildIndex(i);
+            ri = getRightChildIndex(i);
         }
     }
 

@@ -48,9 +48,9 @@ public class ArrayPriorityQueue {
         return maxI;
     }
 
-    public double dequeue() {
+    public Item dequeue() {
         int maxI = getHighestPriorityItemIndex();
-        double maxValue = items[maxI].value;
+        Item maxPriorityItem = items[maxI];
 
         // Shifting the items behind the dequeued item to the left
         for (int i = maxI; i < lastIndex; i++) {
@@ -58,10 +58,10 @@ public class ArrayPriorityQueue {
         }
         lastIndex--;
 
-        return maxValue;
+        return maxPriorityItem;
     }
 
-    public double peek() {
-        return items[getHighestPriorityItemIndex()].value;
+    public Item peek() {
+        return items[getHighestPriorityItemIndex()];
     }
 }
