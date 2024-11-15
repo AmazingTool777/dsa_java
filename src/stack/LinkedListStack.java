@@ -10,7 +10,7 @@ public class LinkedListStack<T> {
         }
     }
 
-    Node<T> head;
+    private Node<T> head;
 
     public boolean isEmpty() {
         return head == null;
