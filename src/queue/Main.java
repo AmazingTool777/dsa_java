@@ -21,6 +21,8 @@ public class Main {
             System.out.println();
             if (implChoice == 1) {
                 arrayList();
+            } else {
+                linkedList();
             }
 
             System.out.println();
@@ -34,6 +36,22 @@ public class Main {
 
     public static void arrayList() {
         ArrayListQueue<String> queue = new ArrayListQueue<>();
+        String[] items = {"Space", "Craft", "Scholar", "Poland", "Ship", "Earth", "Hike", "Relation"};
+
+        for (String item : items) {
+            queue.enqueue(item);
+            System.out.printf("Enqueued - Value: %s\n", item);
+        }
+
+        System.out.printf("Peeked - Value: %s\n", queue.peek());
+
+        while (!queue.isEmpty()) {
+            System.out.printf("Dequeued - Value: %s\n", queue.dequeue());
+        }
+    }
+
+    public static void linkedList() {
+        LinkedListQueue<String> queue = new LinkedListQueue<>();
         String[] items = {"Space", "Craft", "Scholar", "Poland", "Ship", "Earth", "Hike", "Relation"};
 
         for (String item : items) {
