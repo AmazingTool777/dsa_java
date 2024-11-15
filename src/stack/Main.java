@@ -10,8 +10,8 @@ public class Main {
 
         do {
             System.out.println("""
-                    Choose the Priority Queue implementation:
-                    1- Array
+                    Choose the Stack implementation:
+                    1- Array List
                     2- Linked List""");
             do {
                 System.out.print("Your choice: ");
@@ -20,7 +20,7 @@ public class Main {
 
             System.out.println();
             if (implChoice == 1) {
-                array();
+                arrayList();
             } else {
                 linkedList();
             }
@@ -34,8 +34,8 @@ public class Main {
         } while (quitInput.equals("n"));
     }
 
-    public static void array() {
-        ArrayStack<String> stack = new ArrayStack<>();
+    public static void arrayList() {
+        ArrayListStack<String> stack = new ArrayListStack<>();
         String[] items = {"Space", "Craft", "Scholar", "Poland", "Ship", "Earth", "Hike", "Relation"};
 
         for (String item : items) {

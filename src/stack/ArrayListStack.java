@@ -2,10 +2,10 @@ package stack;
 
 import java.util.ArrayList;
 
-public class ArrayStack<T> {
+public class ArrayListStack<T> {
     private final ArrayList<T> items = new ArrayList<>();
 
-    public ArrayStack() {
+    public ArrayListStack() {
     }
 
     public void push(T item) {
