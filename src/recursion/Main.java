@@ -21,6 +21,8 @@ public class Main {
             System.out.println();
             if (choice == 1) {
                 FibonacciSequence.run();
+            } else {
+                TowersOfHanoi.run();
             }
 
             System.out.println();
