@@ -21,6 +21,8 @@ public class Main {
             System.out.println();
             if (implChoice == 1) {
                 array();
+            } else {
+                linkedList();
             }
 
             System.out.println();
@@ -34,6 +36,22 @@ public class Main {
 
     public static void array() {
         ArrayStack<String> stack = new ArrayStack<>();
+        String[] items = {"Space", "Craft", "Scholar", "Poland", "Ship", "Earth", "Hike", "Relation"};
+
+        for (String item : items) {
+            stack.push(item);
+            System.out.printf("Pushed - Value: %s\n", item);
+        }
+
+        System.out.printf("Peeked - Value: %s\n", stack.peek());
+
+        while (!stack.isEmpty()) {
+            System.out.printf("Popped - Value: %s\n", stack.pop());
+        }
+    }
+
+    public static void linkedList() {
+        LinkedListStack<String> stack = new LinkedListStack<>();
         String[] items = {"Space", "Craft", "Scholar", "Poland", "Ship", "Earth", "Hike", "Relation"};
 
         for (String item : items) {
