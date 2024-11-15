@@ -102,7 +102,16 @@ public class Main {
             System.out.printf("Enqueued - value: %.0f%n", item);
         }
 
+        System.out.printf("Peeked - value: %.0f%n", pq.peek());
+
+        int updatePriorityIndex = 3, newPriority = 7;
+        pq.changePriority(updatePriorityIndex, newPriority);
+        System.out.printf("Priority updated - index: %d - new value: %d%n", updatePriorityIndex, newPriority);
         System.out.printf("Peeked - value: %.1f%n", pq.peek());
+
+        int removeIndex = 3;
+        double removed = pq.remove(removeIndex);
+        System.out.printf("Removed - index: %d - value: %.0f%n", removeIndex, removed);
 
         while (!pq.isEmpty()) {
             double dequeued = pq.dequeue();
