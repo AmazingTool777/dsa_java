@@ -25,12 +25,15 @@ public class Main {
 
             if (taskChoice == 1) {
                 adjacencyListTraversal();
+            } else {
+                adjacencyMatrixTraversal();
             }
 
             System.out.println();
             System.out.print("Do you want to quit? (Y/n): ");
             quitInput = sc.nextLine();
-        } while (!quitInput.equals("Y") && !quitInput.equals("n"));
+        } while (quitInput.equals("n"));
+        System.out.println();
     }
 
     public static void adjacencyListTraversal() {
@@ -99,6 +102,93 @@ public class Main {
                 System.out.print("Do you want to restart? (Y/n): ");
                 restartInput = sc.nextLine();
             } while (!restartInput.equals("Y") && !restartInput.equals("n"));
+        } while (restartInput.equals("Y"));
+    }
+
+    public static void adjacencyMatrixTraversal() {
+        AdjacencyMatrixGraph<Integer, Integer> graph = new AdjacencyMatrixGraph<>(List.of(
+                new AdjacencyMatrixGraph.VertexEntry<>(0, 0),
+                new AdjacencyMatrixGraph.VertexEntry<>(1, 1),
+                new AdjacencyMatrixGraph.VertexEntry<>(2, 2),
+                new AdjacencyMatrixGraph.VertexEntry<>(3, 3),
+                new AdjacencyMatrixGraph.VertexEntry<>(4, 4),
+                new AdjacencyMatrixGraph.VertexEntry<>(5, 5)
+        ))
+                .addEdgesFromVertex(0, List.of(
+                        new AdjacencyMatrixGraph.BuilderEdge<>(1),
+                        new AdjacencyMatrixGraph.BuilderEdge<>(5)
+                ))
+                .addEdgesFromVertex(1, List.of(
+                        new AdjacencyMatrixGraph.BuilderEdge<>(2),
+                        new AdjacencyMatrixGraph.BuilderEdge<>(4)
+                ))
+                .addEdgesFromVertex(2, List.of(
+                        new AdjacencyMatrixGraph.BuilderEdge<>(3)
+                ))
+                .addEdgesFromVertex(3, List.of(
+                        new AdjacencyMatrixGraph.BuilderEdge<>(0),
+                        new AdjacencyMatrixGraph.BuilderEdge<>(1)
+                ))
+                .addEdgesFromVertex(4, List.of(
+                        new AdjacencyMatrixGraph.BuilderEdge<>(3)
+                ))
+                .addEdgesFromVertex(5, List.of(
+                        new AdjacencyMatrixGraph.BuilderEdge<>(4)
+                ));
+
+        graph.setWeightSpace(5);
+        graph.setWeightPrecision(0);
+
+        sc.nextLine();
+        String restartInput;
+        do {
+            System.out.println("Graph:");
+            System.out.println(graph);
+            System.out.println();
+
+            int implChoice;
+            do {
+                System.out.println("""
+                        Choose the graph traversal implementation:
+                        1- Recursive DFS
+                        2- Iterative DFS
+                        3- BFS""");
+                System.out.print("Your choice: ");
+                implChoice = sc.nextInt();
+            } while (implChoice > 3 || implChoice < 1);
+            System.out.println();
+
+            int source;
+            do {
+                System.out.print("Set the source node: ");
+                source = sc.nextInt();
+            } while (source < 0 || source > 5);
+            sc.nextLine();
+
+            LinkedList<AdjacencyMatrixGraph.VertexEntry<Integer, Integer>> entries = switch (implChoice) {
+                case 1 -> {
+                    System.out.printf("Recursive DFS traversal from source %d:%n", source);
+                    yield graph.recursiveDFS(source);
+                }
+                case 2 -> {
+                    System.out.printf("Iterative DFS traversal from source %d:%n", source);
+                    yield graph.iterativeDFS(source);
+                }
+                case 3 -> {
+                    System.out.printf("BFS traversal from source %d:%n", source);
+                    yield graph.BFS(source);
+                }
+                default -> new LinkedList<>();
+            };
+
+            for (AdjacencyMatrixGraph.VertexEntry<Integer, Integer> entry : entries) {
+                System.out.printf("%d, ", entry.key);
+            }
+            System.out.println();
+
+            System.out.println();
+            System.out.print("Do you want to restart? (Y/n): ");
+            restartInput = sc.nextLine();
         } while (restartInput.equals("Y"));
     }
 }
