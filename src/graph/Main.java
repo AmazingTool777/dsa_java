@@ -3,7 +3,6 @@ package graph;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
-import java.util.TreeMap;
 
 public class Main {
     public static Scanner sc = new Scanner(System.in);
@@ -37,24 +36,48 @@ public class Main {
     }
 
     public static void adjacencyListTraversal() {
+        AdjacencyListGraph<String, String> graph = new AdjacencyListGraph<>(List.of(
+                new AdjacencyListGraph.VertexEntry<>("A", "A"),
+                new AdjacencyListGraph.VertexEntry<>("B", "B"),
+                new AdjacencyListGraph.VertexEntry<>("C", "C"),
+                new AdjacencyListGraph.VertexEntry<>("D", "D"),
+                new AdjacencyListGraph.VertexEntry<>("E", "E"),
+                new AdjacencyListGraph.VertexEntry<>("F", "F"),
+                new AdjacencyListGraph.VertexEntry<>("G", "G")
+        ))
+                .addEdgesFromVertex("A", List.of(
+                        new AdjacencyListGraph.BuilderEdge<>("C"),
+                        new AdjacencyListGraph.BuilderEdge<>("D"),
+                        new AdjacencyListGraph.BuilderEdge<>("E")
+                ))
+                .addEdgesFromVertex("B", List.of(
+                        new AdjacencyListGraph.BuilderEdge<>("C"),
+                        new AdjacencyListGraph.BuilderEdge<>("F")
+                ))
+                .addEdgesFromVertex("C", List.of(
+                        new AdjacencyListGraph.BuilderEdge<>("A"),
+                        new AdjacencyListGraph.BuilderEdge<>("B"),
+                        new AdjacencyListGraph.BuilderEdge<>("E"),
+                        new AdjacencyListGraph.BuilderEdge<>("F"),
+                        new AdjacencyListGraph.BuilderEdge<>("G")
+                ))
+                .addEdgesFromVertex("D", List.of(
+                        new AdjacencyListGraph.BuilderEdge<>("A")
+                ))
+                .addEdgesFromVertex("E", List.of(
+                        new AdjacencyListGraph.BuilderEdge<>("A"),
+                        new AdjacencyListGraph.BuilderEdge<>("C")
+                ))
+                .addEdgesFromVertex("F", List.of(
+                        new AdjacencyListGraph.BuilderEdge<>("B"),
+                        new AdjacencyListGraph.BuilderEdge<>("C")
+                ))
+                .addEdgesFromVertex("G", List.of(
+                        new AdjacencyListGraph.BuilderEdge<>("C")
+                ));
+
         String restartInput;
         do {
-            AdjacencyListGraph.AdjacencyListItem<String, String> a = new AdjacencyListGraph.AdjacencyListItem<>("A", "A"),
-                    b = new AdjacencyListGraph.AdjacencyListItem<>("B", "B"),
-                    c = new AdjacencyListGraph.AdjacencyListItem<>("C", "C"),
-                    d = new AdjacencyListGraph.AdjacencyListItem<>("D", "D"),
-                    e = new AdjacencyListGraph.AdjacencyListItem<>("E", "E"),
-                    f = new AdjacencyListGraph.AdjacencyListItem<>("F", "F"),
-                    g = new AdjacencyListGraph.AdjacencyListItem<>("G", "G");
-            TreeMap<String, LinkedList<AdjacencyListGraph.AdjacencyListItem<String, String>>> lists = new TreeMap<>();
-            lists.put("A", new LinkedList<>(List.of(c, d, e)));
-            lists.put("B", new LinkedList<>(List.of(c, f)));
-            lists.put("C", new LinkedList<>(List.of(a, b, e, f, g)));
-            lists.put("D", new LinkedList<>(List.of(a)));
-            lists.put("E", new LinkedList<>(List.of(a, c)));
-            lists.put("F", new LinkedList<>(List.of(b, c)));
-            lists.put("G", new LinkedList<>(List.of(c)));
-            AdjacencyListGraph<String, String> graph = new AdjacencyListGraph<>(lists);
             System.out.println("Graph:");
             System.out.println(graph);
             System.out.println();
@@ -78,14 +101,14 @@ public class Main {
                 source = sc.nextLine();
             } while (source.length() > 1);
 
-            LinkedList<String> nodes = switch (implChoice) {
+            LinkedList<AdjacencyListGraph.VertexEntry<String, String>> entries = switch (implChoice) {
                 case 1 -> {
                     System.out.printf("Recursive DFS traversal from source %s:%n", source);
-                    yield graph.DFS(source, new AdjacencyListGraph.RecursiveDFS<>());
+                    yield graph.recursiveDFS(source);
                 }
                 case 2 -> {
                     System.out.printf("Iterative DFS traversal from source %s:%n", source);
-                    yield graph.DFS(source, new AdjacencyListGraph.IterativeDFS<>());
+                    yield graph.iterativeDFS(source);
                 }
                 case 3 -> {
                     System.out.printf("BFS traversal from source %s:%n", source);
@@ -93,16 +116,19 @@ public class Main {
                 }
                 default -> new LinkedList<>();
             };
-            for (String node : nodes) {
-                System.out.print(node + ", ");
+
+            for (AdjacencyListGraph.VertexEntry<String, String> entry : entries) {
+                System.out.print(entry.key + ", ");
             }
-            System.out.println();
+            System.out.println("\n");
 
             do {
                 System.out.print("Do you want to restart? (Y/n): ");
                 restartInput = sc.nextLine();
             } while (!restartInput.equals("Y") && !restartInput.equals("n"));
+            System.out.println();
         } while (restartInput.equals("Y"));
+        System.out.println();
     }
 
     public static void adjacencyMatrixTraversal() {
