@@ -88,7 +88,7 @@ public class Main {
         SortOrderingStrategy<Double> ordering = orderingChoice.equals("a")
                 ? new MinOrdering<>()
                 : new MaxOrdering<>();
-        SortAlgoStrategy<Double> sortStrategy = new BubbleSort<>();
+        SortAlgoStrategy<Double> sortStrategy = sortAlgoChoice == 1 ? new BubbleSort<>() : new SelectionSort<>();
         sortedArray = sortStrategy.sort(array, ordering);
 
         System.out.println("The sorted array:");
@@ -144,7 +144,7 @@ public class Main {
         SortOrderingStrategy<String> ordering = orderingChoice.equals("a")
                 ? new MinOrdering<>()
                 : new MaxOrdering<>();
-        SortAlgoStrategy<String> sortStrategy = new BubbleSort<>();
+        SortAlgoStrategy<String> sortStrategy = sortAlgoChoice == 1 ? new BubbleSort<>() : new SelectionSort<>();
         sortedArray = sortStrategy.sort(array, ordering);
 
         System.out.println("The sorted array:");
