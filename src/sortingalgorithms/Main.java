@@ -91,6 +91,7 @@ public class Main {
         SortAlgoStrategy<Double> sortStrategy = switch (sortAlgoChoice) {
             case 2 -> new SelectionSort<>();
             case 3 -> new InsertionSort<>();
+            case 4 -> new MergeSort<>();
             default -> new BubbleSort<>();
         };
         sortedArray = sortStrategy.sort(array, ordering);
@@ -151,6 +152,7 @@ public class Main {
         SortAlgoStrategy<String> sortStrategy = switch (sortAlgoChoice) {
             case 2 -> new SelectionSort<>();
             case 3 -> new InsertionSort<>();
+            case 4 -> new MergeSort<>();
             default -> new BubbleSort<>();
         };
         sortedArray = sortStrategy.sort(array, ordering);
