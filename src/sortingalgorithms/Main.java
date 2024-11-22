@@ -92,6 +92,7 @@ public class Main {
             case 2 -> new SelectionSort<>();
             case 3 -> new InsertionSort<>();
             case 4 -> new MergeSort<>();
+            case 5 -> new QuickSort<>();
             default -> new BubbleSort<>();
         };
         sortedArray = sortStrategy.sort(array, ordering);
@@ -153,6 +154,7 @@ public class Main {
             case 2 -> new SelectionSort<>();
             case 3 -> new InsertionSort<>();
             case 4 -> new MergeSort<>();
+            case 5 -> new QuickSort<>();
             default -> new BubbleSort<>();
         };
         sortedArray = sortStrategy.sort(array, ordering);
