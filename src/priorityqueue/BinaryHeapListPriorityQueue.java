@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BinaryHeapListPriorityQueue<T extends Comparable<T>> {
-    private final List<T> items = new ArrayList<>();
+    private List<T> items = new ArrayList<>();
 
     /**
      * The ordering strategy to use for ordering the items
@@ -15,6 +15,19 @@ public class BinaryHeapListPriorityQueue<T extends Comparable<T>> {
 
     public void setOrderingStrategy(SortOrderingStrategy<T> orderingStrategy) {
         this.orderingStrategy = orderingStrategy;
+    }
+
+    public BinaryHeapListPriorityQueue() {
+    }
+
+    public BinaryHeapListPriorityQueue(ArrayList<T> items, SortOrderingStrategy<T> orderingStrategy) {
+        this.items = items;
+        this.orderingStrategy = orderingStrategy;
+        // Heapify the items
+        int mid = getParentIndex(items.size() - 1);
+        for (int i = mid; i >= 0; i--) {
+            siftDown(i);
+        }
     }
 
     private void swap(int i1, int i2) {
