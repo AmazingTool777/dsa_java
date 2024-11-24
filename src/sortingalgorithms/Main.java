@@ -65,9 +65,10 @@ public class Main {
                     3- Insertion sort
                     4- Merge sort
                     5- Quick sort
+                    6- Heap sort
                     Your choice:\s""");
             sortAlgoChoice = sc.nextInt();
-        } while (sortAlgoChoice < 0 || sortAlgoChoice > 5);
+        } while (sortAlgoChoice < 0 || sortAlgoChoice > 6);
         System.out.println();
         sc.nextLine();
 
@@ -97,6 +98,7 @@ public class Main {
             case 3 -> new InsertionSort<>();
             case 4 -> new MergeSort<>();
             case 5 -> new QuickSort<>();
+            case 6 -> new HeapSort<>();
             default -> new BubbleSort<>();
         };
         sortedArray = sortStrategy.sort(array, ordering);
@@ -128,9 +130,10 @@ public class Main {
                     3- Insertion sort
                     4- Merge sort
                     5- Quick sort
+                    6- Heap sort
                     Your choice:\s""");
             sortAlgoChoice = sc.nextInt();
-        } while (sortAlgoChoice < 0 || sortAlgoChoice > 5);
+        } while (sortAlgoChoice < 0 || sortAlgoChoice > 6);
         System.out.println();
         sc.nextLine();
 
@@ -159,6 +162,7 @@ public class Main {
             case 3 -> new InsertionSort<>();
             case 4 -> new MergeSort<>();
             case 5 -> new QuickSort<>();
+            case 6 -> new HeapSort<>();
             default -> new BubbleSort<>();
         };
         sortedArray = sortStrategy.sort(array, ordering);
