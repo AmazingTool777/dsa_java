@@ -1,10 +1,21 @@
 package priorityqueue;
 
+import utils.orderingstrategy.SortOrderingStrategy;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class BinaryHeapListPriorityQueue<T extends Comparable<T>> {
     private final List<T> items = new ArrayList<>();
+
+    /**
+     * The ordering strategy to use for ordering the items
+     */
+    private SortOrderingStrategy<T> orderingStrategy;
+
+    public void setOrderingStrategy(SortOrderingStrategy<T> orderingStrategy) {
+        this.orderingStrategy = orderingStrategy;
+    }
 
     private void swap(int i1, int i2) {
         T temp = items.get(i1);
@@ -12,43 +23,58 @@ public class BinaryHeapListPriorityQueue<T extends Comparable<T>> {
         items.set(i2, temp);
     }
 
-    public void enqueue(T item) {
-        int i = items.size(), pi = (i - 1) / 2;
+    private int getParentIndex(int index) {
+        return (index - 1) / 2;
+    }
 
-        items.add(item);
+    private void siftUp(int index) {
+        int i = index, pi = getParentIndex(index);
 
-        while (pi >= 0 && items.get(i).compareTo(items.get(pi)) > 0) {
+        while (pi >= 0 && orderingStrategy.shouldPrecede(items.get(i), items.get(pi))) {
             swap(i, pi);
             i = pi;
-            pi = (i - 1) / 2;
+            pi = getParentIndex(i);
         }
+    }
+
+    public void enqueue(T item) {
+        items.add(item);
+        siftUp(items.size() - 1);
     }
 
     public T peek() {
         return items.get(0);
     }
 
-    public T dequeue() {
-        T topItem = peek();
-        int i = 0, lastIndex = items.size() - 1, li = 1, ri = 2, childIndex;
+    private int getLeftChildIndex(int index) {
+        return 2 * index + 1;
+    }
 
-        items.set(0, items.getLast());
+    private int getRightChildIndex(int index) {
+        return 2 * index + 2;
+    }
 
-        while ((li <= lastIndex && items.get(i).compareTo(items.get(li)) < 0)
-                || (ri <= lastIndex && items.get(i).compareTo(items.get(ri)) < 0)) {
+    private void siftDown(int index) {
+        int i = index, li = getLeftChildIndex(i), ri = getRightChildIndex(i), childIndex, lastIndex = items.size() - 1;
+
+        while ((li <= lastIndex && orderingStrategy.shouldPrecede(items.get(li), items.get(i)))
+                || (ri <= lastIndex && orderingStrategy.shouldPrecede(items.get(ri), items.get(i)))) {
             childIndex = li == lastIndex
-                    || items.get(i).compareTo(items.get(ri)) >= 0
-                    || items.get(li).compareTo(items.get(ri)) > 0
-                    ? li
-                    : ri;
+                    || !orderingStrategy.shouldPrecede(items.get(ri), items.get(i))
+                    || orderingStrategy.shouldPrecede(items.get(li), items.get(ri))
+                    ? li : ri;
             swap(i, childIndex);
             i = childIndex;
-            li = i * 2 + 1;
-            ri = i * 2 + 2;
+            li = getLeftChildIndex(i);
+            ri = getRightChildIndex(i);
         }
+    }
 
+    public T dequeue() {
+        T topItem = peek();
+        items.set(0, items.getLast());
+        siftDown(0);
         items.removeLast();
-
         return topItem;
     }
 

@@ -1,5 +1,7 @@
 package priorityqueue;
 
+import utils.orderingstrategy.MaxOrdering;
+
 import java.util.Scanner;
 
 public class Main {
@@ -121,6 +123,7 @@ public class Main {
 
     public static void binaryHeapList() {
         BinaryHeapListPriorityQueue<Job> pq = new BinaryHeapListPriorityQueue<>();
+        pq.setOrderingStrategy(new MaxOrdering<>());
         Job[] jobs = {
                 new Job(1),
                 new Job(2),
