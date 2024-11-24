@@ -1,5 +1,7 @@
 package sortingalgorithms;
 
+import utils.orderingstrategy.SortOrderingStrategy;
+
 public class BubbleSort<T extends Comparable<T>> implements SortAlgoStrategy<T> {
     @Override
     public T[] sort(T[] array, SortOrderingStrategy<T> ordering) {

@@ -1,5 +1,7 @@
 package sortingalgorithms;
 
+import utils.orderingstrategy.SortOrderingStrategy;
+
 public class SelectionSort<T extends Comparable<T>> implements SortAlgoStrategy<T> {
     @Override
     public T[] sort(T[] array, SortOrderingStrategy<T> orderingStrategy) {

@@ -1,5 +1,9 @@
 package sortingalgorithms;
 
+import utils.orderingstrategy.MaxOrdering;
+import utils.orderingstrategy.MinOrdering;
+import utils.orderingstrategy.SortOrderingStrategy;
+
 import java.util.Scanner;
 
 public class Main {

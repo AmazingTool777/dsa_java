@@ -1,5 +1,7 @@
 package sortingalgorithms;
 
+import utils.orderingstrategy.SortOrderingStrategy;
+
 public class QuickSort<T extends Comparable<T>> implements SortAlgoStrategy<T> {
     /**
      * The recursive implementation of the quick sort algorithm.

@@ -1,4 +1,4 @@
-package sortingalgorithms;
+package utils.orderingstrategy;
 
 public class MinOrdering<T extends Comparable<T>> implements SortOrderingStrategy<T> {
     @Override

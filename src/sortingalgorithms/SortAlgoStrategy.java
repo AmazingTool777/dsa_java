@@ -1,5 +1,7 @@
 package sortingalgorithms;
 
+import utils.orderingstrategy.SortOrderingStrategy;
+
 /**
  * Contract for a sorting algorithm strategy
  *

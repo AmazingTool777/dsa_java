@@ -1,4 +1,4 @@
-package sortingalgorithms;
+package utils.orderingstrategy;
 
 /**
  * Contract for a sorting algorithm's ordering strategy.
