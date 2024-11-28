@@ -94,4 +94,10 @@ public class BinaryHeapListPriorityQueue<T extends Comparable<T>> {
     public boolean isEmpty() {
         return items.isEmpty();
     }
+
+    public void changePriority(T item, boolean priorityIncreased) {
+        int index = items.indexOf(item);
+        if (priorityIncreased) siftUp(index);
+        else siftDown(index);
+    }
 }
