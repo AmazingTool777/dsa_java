@@ -1,8 +1,6 @@
 package graph;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 public class Main {
     public static Scanner sc = new Scanner(System.in);
@@ -17,6 +15,7 @@ public class Main {
                         Choose the task to run:
                         1- Graph traversal with an adjacency list
                         2- Graph traversal with an adjacency matrix
+                        3- Shortest path finding with an adjacency list
                         Your choice:\s""");
                 taskChoice = sc.nextInt();
             } while (taskChoice < 1);
@@ -24,8 +23,10 @@ public class Main {
 
             if (taskChoice == 1) {
                 adjacencyListTraversal();
-            } else {
+            } else if (taskChoice == 2) {
                 adjacencyMatrixTraversal();
+            } else {
+                adjacencyListDijkstraShortestPath();
             }
 
             System.out.println();
@@ -211,6 +212,105 @@ public class Main {
                 System.out.printf("%d, ", entry.key);
             }
             System.out.println();
+
+            System.out.println();
+            System.out.print("Do you want to restart? (Y/n): ");
+            restartInput = sc.nextLine();
+        } while (restartInput.equals("Y"));
+    }
+
+    /**
+     * Shortest path finding in an adjacency list graph using Moore Dijkstra's algorithm.
+     * The graph that we used can be found in this article:
+     * <a href="https://www.geeksforgeeks.org/dijkstras-shortest-path-algorithm-greedy-algo-7/">...</a>.
+     */
+    public static void adjacencyListDijkstraShortestPath() {
+        String restartInput;
+        do {
+            AdjacencyListGraph<Integer, Integer> graph = new AdjacencyListGraph<>(List.of(
+                    new AdjacencyListGraph.VertexEntry<>(0, 0),
+                    new AdjacencyListGraph.VertexEntry<>(1, 1),
+                    new AdjacencyListGraph.VertexEntry<>(2, 2),
+                    new AdjacencyListGraph.VertexEntry<>(3, 3),
+                    new AdjacencyListGraph.VertexEntry<>(4, 4),
+                    new AdjacencyListGraph.VertexEntry<>(5, 5),
+                    new AdjacencyListGraph.VertexEntry<>(6, 6),
+                    new AdjacencyListGraph.VertexEntry<>(7, 7),
+                    new AdjacencyListGraph.VertexEntry<>(8, 8)
+            ))
+                    .addEdgesFromVertex(0, List.of(
+                            new AdjacencyListGraph.BuilderEdge<>(1, 4),
+                            new AdjacencyListGraph.BuilderEdge<>(7, 8)
+                    ))
+                    .addEdgesFromVertex(1, List.of(
+                            new AdjacencyListGraph.BuilderEdge<>(0, 4),
+                            new AdjacencyListGraph.BuilderEdge<>(2, 8),
+                            new AdjacencyListGraph.BuilderEdge<>(7, 11)
+                    ))
+                    .addEdgesFromVertex(2, List.of(
+                            new AdjacencyListGraph.BuilderEdge<>(1, 8),
+                            new AdjacencyListGraph.BuilderEdge<>(3, 7),
+                            new AdjacencyListGraph.BuilderEdge<>(5, 4),
+                            new AdjacencyListGraph.BuilderEdge<>(8, 2)
+                    ))
+                    .addEdgesFromVertex(3, List.of(
+                            new AdjacencyListGraph.BuilderEdge<>(4, 9),
+                            new AdjacencyListGraph.BuilderEdge<>(5, 14)
+                    ))
+                    .addEdgesFromVertex(4, List.of(
+                            new AdjacencyListGraph.BuilderEdge<>(3, 9),
+                            new AdjacencyListGraph.BuilderEdge<>(5, 10)
+                    ))
+                    .addEdgesFromVertex(5, List.of(
+                            new AdjacencyListGraph.BuilderEdge<>(2, 4),
+                            new AdjacencyListGraph.BuilderEdge<>(3, 14),
+                            new AdjacencyListGraph.BuilderEdge<>(4, 10),
+                            new AdjacencyListGraph.BuilderEdge<>(6, 2)
+                    ))
+                    .addEdgesFromVertex(6, List.of(
+                            new AdjacencyListGraph.BuilderEdge<>(5, 2),
+                            new AdjacencyListGraph.BuilderEdge<>(7, 1),
+                            new AdjacencyListGraph.BuilderEdge<>(8, 6)
+                    ))
+                    .addEdgesFromVertex(7, List.of(
+                            new AdjacencyListGraph.BuilderEdge<>(0, 8),
+                            new AdjacencyListGraph.BuilderEdge<>(1, 11),
+                            new AdjacencyListGraph.BuilderEdge<>(6, 1),
+                            new AdjacencyListGraph.BuilderEdge<>(8, 7)
+                    ))
+                    .addEdgesFromVertex(8, List.of(
+                            new AdjacencyListGraph.BuilderEdge<>(2, 2),
+                            new AdjacencyListGraph.BuilderEdge<>(6, 6),
+                            new AdjacencyListGraph.BuilderEdge<>(7, 7)
+                    ));
+
+            System.out.println("Graph:");
+            System.out.println(graph);
+
+            System.out.println();
+            int source;
+            do {
+                System.out.print("Set the source node: ");
+                source = sc.nextInt();
+            } while (source < 0 || source > 8);
+            sc.nextLine();
+            System.out.println();
+
+            TreeMap<Integer, AdjacencyListGraph.ShortestPathToVertex<Integer, Integer>> paths = graph.findDijkstraShortestPaths(source);
+
+            System.out.printf("Shortest paths from source %d to all edges:%n", source);
+            for (Map.Entry<Integer, AdjacencyListGraph.ShortestPathToVertex<Integer, Integer>> entry : paths.entrySet()) {
+                Integer key = entry.getKey();
+                AdjacencyListGraph.ShortestPathToVertex<Integer, Integer> path = entry.getValue();
+                System.out.printf("%d (%.0f):", key, path.compoundWeight());
+                int i = 0;
+                for (AdjacencyListGraph.VertexEntry<Integer, Integer> vertexEntry : path.entries()) {
+                    if (i > 0) System.out.print(" ->");
+                    System.out.printf(" %d", vertexEntry.key);
+                    i++;
+                }
+                System.out.println();
+            }
 
             System.out.println();
             System.out.print("Do you want to restart? (Y/n): ");

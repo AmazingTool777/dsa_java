@@ -1,7 +1,9 @@
 package graph;
 
+import priorityqueue.BinaryHeapListPriorityQueue;
 import queue.LinkedListQueue;
 import stack.LinkedListStack;
+import utils.orderingstrategy.MinOrdering;
 
 import java.util.*;
 
@@ -50,15 +52,15 @@ public class AdjacencyListGraph<TKey, TVertex> {
         /**
          * The index of the destination vertex inside the vertex entries
          */
-        public int index;
+        public int vertexIndex;
 
         /**
          * The weight of the edge
          */
         public double weight;
 
-        public ListEdge(int index, double weight) {
-            this.index = index;
+        public ListEdge(int vertexIndex, double weight) {
+            this.vertexIndex = vertexIndex;
             this.weight = weight;
         }
     }
@@ -127,8 +129,8 @@ public class AdjacencyListGraph<TKey, TVertex> {
         visitedEntries.add(entries.get(source));
 
         for (ListEdge edge : lists.get(source)) {
-            if (visited.contains(edge.index)) continue;
-            recursiveDFS(edge.index, visited, visitedEntries);
+            if (visited.contains(edge.vertexIndex)) continue;
+            recursiveDFS(edge.vertexIndex, visited, visitedEntries);
         }
 
         return visitedEntries;
@@ -174,7 +176,7 @@ public class AdjacencyListGraph<TKey, TVertex> {
             LinkedList<ListEdge> adjEdges = lists.get(current);
             ListIterator<ListEdge> adjEdgesIterator = adjEdges.listIterator(adjEdges.size());
             while (adjEdgesIterator.hasPrevious()) {
-                adj = adjEdgesIterator.previous().index;
+                adj = adjEdgesIterator.previous().vertexIndex;
                 if (visited.contains(adj)) continue;
                 toTraverse.push(adj);
             }
@@ -204,7 +206,7 @@ public class AdjacencyListGraph<TKey, TVertex> {
             current = toTraverse.dequeue();
 
             for (ListEdge edge : lists.get(current)) {
-                adj = edge.index;
+                adj = edge.vertexIndex;
                 if (visited.contains(adj)) continue;
                 visitedEntries.add(entries.get(adj));
                 visited.add(adj);
@@ -213,6 +215,137 @@ public class AdjacencyListGraph<TKey, TVertex> {
         }
 
         return visitedEntries;
+    }
+
+    /**
+     * Holds the data of the shortest path to a destination vertex after the shortest path finding algorithm is done.
+     *
+     * @param key            The key of the destination vertex.
+     * @param compoundWeight The sum of the weights of the edges along the shortest path.
+     * @param entries        Linked list of the sequence of vertices that constitute the path.
+     * @param <TKey>         The type of the vertex key
+     * @param <TVertex>      The type of the vertex value
+     */
+    public record ShortestPathToVertex<TKey, TVertex>(
+            TKey key,
+            double compoundWeight,
+            LinkedList<VertexEntry<TKey, TVertex>> entries
+    ) {
+    }
+
+    /**
+     * Intermediate class that we use to store the progress of the shortest path finding to a vertex.
+     */
+    private static class ShortestPathProgress implements Comparable<ShortestPathProgress> {
+        /**
+         * The current vertex's index
+         */
+        public int vertexIndex;
+
+        /**
+         * The index of the previous vertex that led to the current path progress
+         */
+        public int prevVertexIndex;
+
+        /**
+         * The sum of the weights of the edges that make up the path so far.
+         */
+        public double compoundWeight;
+
+        public ShortestPathProgress(int vertexIndex, int prevVertexIndex, double compoundWeight) {
+            this.vertexIndex = vertexIndex;
+            this.prevVertexIndex = prevVertexIndex;
+            this.compoundWeight = compoundWeight;
+        }
+
+        @Override
+        public int compareTo(ShortestPathProgress other) {
+            return Double.compare(this.compoundWeight, other.compoundWeight);
+        }
+    }
+
+    /**
+     * Backtracks the sequence of vertices that make up the shortest path from a source vertex to a destination vertex.
+     *
+     * @param sourceIndex The index of the source vertex
+     * @param finalPath   The final path to the destination vertex
+     * @param paths       Array of the shortest paths to all vertices from the source vertex
+     * @return Linked list of the sequence of vertices
+     */
+    private LinkedList<VertexEntry<TKey, TVertex>> backtrackShortestPathEntries(
+            int sourceIndex,
+            ShortestPathProgress finalPath,
+            ShortestPathProgress[] paths
+    ) {
+        LinkedList<VertexEntry<TKey, TVertex>> entries = new LinkedList<>();
+
+        ShortestPathProgress currentPath = finalPath;
+        while (currentPath.vertexIndex != sourceIndex) {
+            entries.addFirst(this.entries.get(currentPath.vertexIndex));
+            currentPath = paths[currentPath.prevVertexIndex];
+        }
+
+        entries.addFirst(this.entries.get(sourceIndex));
+
+        return entries;
+    }
+
+    /**
+     * Shortest pathfinder using Moore Dijkstra's algorithm.
+     *
+     * @param sourceKey The key of the source vertex.
+     * @return Map of all the destination vertices' keys and the corresponding shortest path data.
+     */
+    public TreeMap<TKey, ShortestPathToVertex<TKey, TVertex>> findDijkstraShortestPaths(TKey sourceKey) {
+        int size = entries.size(), source = keysIndices.get(sourceKey);
+        TreeMap<TKey, ShortestPathToVertex<TKey, TVertex>> verticesPaths = new TreeMap<>();
+
+        // Array that checks whether a vertex at a given index has already been included or not
+        boolean[] included = new boolean[size];
+        included[source] = true;
+
+        // Initialization of shortest paths' progress
+        ShortestPathProgress[] paths = new ShortestPathProgress[size];
+        for (int i = 0; i < size; i++) {
+            boolean isSource = i == source;
+            double compoundWeight = isSource ? 0 : Double.POSITIVE_INFINITY;
+            int prevVertexIndex = isSource ? source : -1;
+            paths[i] = new ShortestPathProgress(i, prevVertexIndex, compoundWeight);
+        }
+
+        // Priority queue of the shortest paths' progress ordered by the least compound weights of the paths
+        BinaryHeapListPriorityQueue<ShortestPathProgress> toExplore = new BinaryHeapListPriorityQueue<>(
+                new ArrayList<>(Arrays.asList(paths)),
+                new MinOrdering<>()
+        );
+
+        while (!toExplore.isEmpty()) {
+            ShortestPathProgress currentPath = toExplore.dequeue();
+            included[currentPath.vertexIndex] = true;
+
+            for (ListEdge edge : lists.get(currentPath.vertexIndex)) {
+                if (included[edge.vertexIndex]) continue;
+                ShortestPathProgress adjPath = paths[edge.vertexIndex];
+                double compoundWeightFromCurrentPath = currentPath.compoundWeight + edge.weight;
+                // Updating the compound weights of the non-included adjacent path
+                // if the sum of the compound weights of the current path and the weight to the adjacent path
+                // is less than the adjacent path's current compound weight.
+                if (adjPath.compoundWeight > compoundWeightFromCurrentPath) {
+                    adjPath.compoundWeight = compoundWeightFromCurrentPath;
+                    adjPath.prevVertexIndex = currentPath.vertexIndex;
+                    toExplore.changePriority(adjPath, true);
+                }
+            }
+        }
+
+        // Mapping the shortest paths' final progress to the actual shortest path data to each destination vertex
+        for (ShortestPathProgress path : paths) {
+            VertexEntry<TKey, TVertex> entry = entries.get(path.vertexIndex);
+            LinkedList<VertexEntry<TKey, TVertex>> entries = backtrackShortestPathEntries(source, path, paths);
+            verticesPaths.put(entry.key, new ShortestPathToVertex<>(entry.key, path.compoundWeight, entries));
+        }
+
+        return verticesPaths;
     }
 
     @Override
@@ -224,10 +357,10 @@ public class AdjacencyListGraph<TKey, TVertex> {
             builder.append(entries.get(i).key).append(" : ");
             int edgesCount = lists.get(i).size(), j = 0;
             for (ListEdge edge : lists.get(i)) {
-                builder.append(entries.get(edge.index).key);
+                builder.append(entries.get(edge.vertexIndex).key);
                 if (edge.weight != 0) {
-                    int weightPrecision = 2;
-                    String format = " %." + weightPrecision + "f";
+                    int weightPrecision = 0;
+                    String format = "%." + weightPrecision + "f";
                     builder.append(" (").append(String.format(format, edge.weight)).append(")");
                 }
                 if (j < edgesCount - 1) builder.append(" -> ");
