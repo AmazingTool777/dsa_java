@@ -218,6 +218,23 @@ public class AdjacencyListGraph<TKey, TVertex> {
     }
 
     /**
+     * Gets the weight from a vertex to itself
+     *
+     * @param index The index of the vertex
+     * @return The weight
+     */
+    private double getWeightToSelf(int index) {
+        double weight = 0;
+        for (ListEdge edge : lists.get(index)) {
+            if (edge.vertexIndex == index) {
+                weight = edge.weight;
+                break;
+            }
+        }
+        return weight;
+    }
+
+    /**
      * Holds the data of the shortest path to a destination vertex after the shortest path finding algorithm is done.
      *
      * @param key            The key of the destination vertex.
@@ -308,7 +325,7 @@ public class AdjacencyListGraph<TKey, TVertex> {
         ShortestPathProgress[] paths = new ShortestPathProgress[size];
         for (int i = 0; i < size; i++) {
             boolean isSource = i == source;
-            double compoundWeight = isSource ? 0 : Double.POSITIVE_INFINITY;
+            double compoundWeight = isSource ? getWeightToSelf(source) : Double.POSITIVE_INFINITY;
             int prevVertexIndex = isSource ? source : -1;
             paths[i] = new ShortestPathProgress(i, prevVertexIndex, compoundWeight);
         }
