@@ -16,17 +16,25 @@ public class Main {
                         1- Graph traversal with an adjacency list
                         2- Graph traversal with an adjacency matrix
                         3- Shortest path finding with an adjacency list
+                        4- Shortest path finding with an adjacency matrix
                         Your choice:\s""");
                 taskChoice = sc.nextInt();
             } while (taskChoice < 1);
             System.out.println();
 
-            if (taskChoice == 1) {
-                adjacencyListTraversal();
-            } else if (taskChoice == 2) {
-                adjacencyMatrixTraversal();
-            } else {
-                adjacencyListDijkstraShortestPath();
+            switch (taskChoice) {
+                case 2:
+                    adjacencyMatrixTraversal();
+                    break;
+                case 3:
+                    adjacencyListDijkstraShortestPath();
+                    break;
+                case 4:
+                    adjacencyMatrixDijkstraShortestPath();
+                    break;
+                default:
+                    adjacencyListTraversal();
+                    break;
             }
 
             System.out.println();
@@ -315,6 +323,91 @@ public class Main {
             System.out.println();
             System.out.print("Do you want to restart? (Y/n): ");
             restartInput = sc.nextLine();
+        } while (restartInput.equals("Y"));
+    }
+
+    /**
+     * Shortest path finding in an adjacency matrix graph using Moore Dijkstra's algorithm.
+     */
+    public static void adjacencyMatrixDijkstraShortestPath() {
+        String restartInput;
+        do {
+            AdjacencyMatrixGraph<Integer, Integer> graph = new AdjacencyMatrixGraph<>(List.of(
+                    new AdjacencyMatrixGraph.VertexEntry<>(1, 1),
+                    new AdjacencyMatrixGraph.VertexEntry<>(2, 2),
+                    new AdjacencyMatrixGraph.VertexEntry<>(3, 3),
+                    new AdjacencyMatrixGraph.VertexEntry<>(4, 4),
+                    new AdjacencyMatrixGraph.VertexEntry<>(5, 5),
+                    new AdjacencyMatrixGraph.VertexEntry<>(6, 6),
+                    new AdjacencyMatrixGraph.VertexEntry<>(7, 7),
+                    new AdjacencyMatrixGraph.VertexEntry<>(8, 8)
+            ))
+                    .addEdgesFromVertex(1, List.of(
+                            new AdjacencyMatrixGraph.BuilderEdge<>(2, 3),
+                            new AdjacencyMatrixGraph.BuilderEdge<>(3, 3)
+                    ))
+                    .addEdgesFromVertex(2, List.of(
+                            new AdjacencyMatrixGraph.BuilderEdge<>(4, 2),
+                            new AdjacencyMatrixGraph.BuilderEdge<>(5, 1)
+                    ))
+                    .addEdgesFromVertex(3, List.of(
+                            new AdjacencyMatrixGraph.BuilderEdge<>(1, 2),
+                            new AdjacencyMatrixGraph.BuilderEdge<>(2, 2),
+                            new AdjacencyMatrixGraph.BuilderEdge<>(4, 2)
+                    ))
+                    .addEdgesFromVertex(4, List.of(
+                            new AdjacencyMatrixGraph.BuilderEdge<>(5, 1),
+                            new AdjacencyMatrixGraph.BuilderEdge<>(6, 2),
+                            new AdjacencyMatrixGraph.BuilderEdge<>(7, 1)
+                    ))
+                    .addEdgesFromVertex(5, List.of(
+                            new AdjacencyMatrixGraph.BuilderEdge<>(6, 3),
+                            new AdjacencyMatrixGraph.BuilderEdge<>(7, 2)
+                    ))
+                    .addEdgesFromVertex(6, List.of(
+                            new AdjacencyMatrixGraph.BuilderEdge<>(7, 2)
+                    ))
+                    .addEdgesFromVertex(7, List.of(
+                            new AdjacencyMatrixGraph.BuilderEdge<>(8, 1)
+                    ))
+                    .addEdgesFromVertex(8, List.of(
+                            new AdjacencyMatrixGraph.BuilderEdge<>(3, 4)
+                    ));
+
+            System.out.println("Graph:");
+            graph.setWeightSpace(5);
+            System.out.println(graph);
+            System.out.println();
+
+            int source;
+            do {
+                System.out.print("Set the source vertex: ");
+                source = sc.nextInt();
+            } while (source < 1 || source > 8);
+            sc.nextLine();
+            System.out.println();
+
+            System.out.printf("Shortest paths from source %d to all vertices:%n", source);
+            TreeMap<Integer, AdjacencyMatrixGraph.ShortestPathToVertex<Integer, Integer>> paths = graph.findDijkstraShortestPaths(source);
+            for (Map.Entry<Integer, AdjacencyMatrixGraph.ShortestPathToVertex<Integer, Integer>> entry : paths.entrySet()) {
+                Integer key = entry.getKey();
+                AdjacencyMatrixGraph.ShortestPathToVertex<Integer, Integer> path = entry.getValue();
+                System.out.printf("%d (%.0f): ", key, path.compoundWeight());
+                int i = 0;
+                for (AdjacencyMatrixGraph.VertexEntry<Integer, Integer> vertexEntry : path.entries()) {
+                    if (i > 0) System.out.print(" -> ");
+                    System.out.print(vertexEntry.key);
+                    i++;
+                }
+                System.out.println();
+            }
+            System.out.println();
+
+            do {
+                System.out.print("Do you want to restart? (Y/n): ");
+                restartInput = sc.nextLine();
+            } while (!restartInput.equals("Y") && !restartInput.equals("n"));
+            System.out.println();
         } while (restartInput.equals("Y"));
     }
 }

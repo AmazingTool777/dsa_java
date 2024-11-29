@@ -1,7 +1,9 @@
 package graph;
 
+import priorityqueue.BinaryHeapListPriorityQueue;
 import queue.LinkedListQueue;
 import stack.LinkedListStack;
+import utils.orderingstrategy.MinOrdering;
 
 import java.util.*;
 
@@ -109,6 +111,22 @@ public class AdjacencyMatrixGraph<TKey, TVertex> {
     }
 
     /**
+     * Gets the indices of the origin vertices of a target vertex
+     *
+     * @param target The index in the matrix of the target vertex
+     * @return List of the indices of the origin vertices
+     */
+    private LinkedList<Integer> getOriginVerticesIndices(int target) {
+        LinkedList<Integer> indices = new LinkedList<>();
+        for (int i = 0; i < size; i++) {
+            if (matrix[i][target] != 0) {
+                indices.add(i);
+            }
+        }
+        return indices;
+    }
+
+    /**
      * The actual recursive implementation of the DFS traversal
      *
      * @param source         The index of the source vertex
@@ -207,6 +225,140 @@ public class AdjacencyMatrixGraph<TKey, TVertex> {
     }
 
     /**
+     * Holds the data of the shortest path to a destination vertex after the shortest path finding algorithm is done.
+     *
+     * @param key            The key of the destination vertex.
+     * @param compoundWeight The sum of the weights of the edges along the shortest path.
+     * @param entries        Linked list of the sequence of vertices that constitute the path.
+     * @param <TKey>         The type of the vertex key
+     * @param <TVertex>      The type of the vertex value
+     */
+    public record ShortestPathToVertex<TKey, TVertex>(
+            TKey key,
+            double compoundWeight,
+            LinkedList<VertexEntry<TKey, TVertex>> entries
+    ) {
+    }
+
+    /**
+     * Intermediate class that we use to store the progress of the shortest path finding to a vertex.
+     */
+    private static class ShortestPathProgress implements Comparable<ShortestPathProgress> {
+        /**
+         * The current vertex's index
+         */
+        public int vertexIndex;
+
+        /**
+         * The sum of the weights of the edges that make up the path so far.
+         */
+        public double compoundWeight;
+
+        public ShortestPathProgress(int vertexIndex, double compoundWeight) {
+            this.vertexIndex = vertexIndex;
+            this.compoundWeight = compoundWeight;
+        }
+
+        @Override
+        public int compareTo(ShortestPathProgress other) {
+            return Double.compare(this.compoundWeight, other.compoundWeight);
+        }
+    }
+
+    /**
+     * Backtracks the sequence of vertices that make up the shortest path from a source vertex to a destination vertex.
+     *
+     * @param source    The index of the source vertex
+     * @param finalPath The final path to the destination vertex
+     * @param paths     Array of the shortest paths to all vertices from the source vertex
+     * @return Linked list of the sequence of vertices
+     */
+    private LinkedList<VertexEntry<TKey, TVertex>> backtrackShortestPathVertices(
+            int source,
+            ShortestPathProgress finalPath,
+            ShortestPathProgress[] paths
+    ) {
+        LinkedList<VertexEntry<TKey, TVertex>> entries = new LinkedList<>();
+        ShortestPathProgress currentPath = finalPath;
+
+        while (currentPath.vertexIndex != source) {
+            entries.addFirst(this.entries.get(currentPath.vertexIndex));
+
+            int prevVertexIndex = -1;
+            double minCompoundWeightFromPrevVertex = Double.POSITIVE_INFINITY;
+            for (int prev : getOriginVerticesIndices(currentPath.vertexIndex)) {
+                double compoundWeightFromPrevVertex = paths[prev].compoundWeight + matrix[prev][currentPath.vertexIndex];
+                if (compoundWeightFromPrevVertex < minCompoundWeightFromPrevVertex) {
+                    prevVertexIndex = prev;
+                    minCompoundWeightFromPrevVertex = compoundWeightFromPrevVertex;
+                }
+            }
+
+            currentPath = paths[prevVertexIndex];
+        }
+
+        entries.addFirst(this.entries.get(source));
+
+        return entries;
+    }
+
+    /**
+     * Shortest pathfinder using Moore Dijkstra's algorithm.
+     *
+     * @param sourceKey The key of the source vertex
+     * @return Map of the shortest paths data per vertex key
+     */
+    public TreeMap<TKey, ShortestPathToVertex<TKey, TVertex>> findDijkstraShortestPaths(TKey sourceKey) {
+        int size = entries.size(), source = keysIndices.get(sourceKey);
+
+        // Checks whether the paths at vertices indices have already been included or not
+        boolean[] included = new boolean[size];
+
+        // Data for the progress of the paths to each vertex
+        ShortestPathProgress[] progressPaths = new ShortestPathProgress[size];
+        for (int i = 0; i < size; i++) {
+            double compoundWeight = i == source ? matrix[source][source] : Double.POSITIVE_INFINITY;
+            progressPaths[i] = new ShortestPathProgress(i, compoundWeight);
+        }
+
+        // Priority queue for the paths that should be included next.
+        // The less compound weight of the path, the higher the priority.
+        BinaryHeapListPriorityQueue<ShortestPathProgress> toExplore = new BinaryHeapListPriorityQueue<>(
+                new ArrayList<>(Arrays.asList(progressPaths)),
+                new MinOrdering<>()
+        );
+
+        while (!toExplore.isEmpty()) {
+            ShortestPathProgress currentPath = toExplore.dequeue();
+            included[currentPath.vertexIndex] = true;
+
+            for (Integer adj : getAdjacentVerticesIndices(currentPath.vertexIndex)) {
+                if (included[adj]) continue;
+
+                // If the compound weight of the adjacent vertex's path is less than the sum of the compound weight
+                // of the current path and the weight to the adjacent vertex, then the adjacent vertex's path
+                // should be updated to that sum and so should be the priority of that path in the priority queue.
+                double compoundWeightFromCurrentPath = currentPath.compoundWeight + matrix[currentPath.vertexIndex][adj];
+                ShortestPathProgress adjVertexPath = progressPaths[adj];
+                if (adjVertexPath.compoundWeight > compoundWeightFromCurrentPath) {
+                    adjVertexPath.compoundWeight = compoundWeightFromCurrentPath;
+                    toExplore.changePriority(adjVertexPath, true);
+                }
+            }
+        }
+
+        // Mapping the shortest paths data to each vertex into each vertex key
+        TreeMap<TKey, ShortestPathToVertex<TKey, TVertex>> shortestPathsPerVertex = new TreeMap<>();
+        for (ShortestPathProgress path : progressPaths) {
+            VertexEntry<TKey, TVertex> entry = entries.get(path.vertexIndex);
+            LinkedList<VertexEntry<TKey, TVertex>> entries = backtrackShortestPathVertices(source, path, progressPaths);
+            shortestPathsPerVertex.put(entry.key, new ShortestPathToVertex<>(entry.key, path.compoundWeight, entries));
+        }
+
+        return shortestPathsPerVertex;
+    }
+
+    /**
      * The space occupied by a weight inside the `toString()` method
      */
     private int weightSpace = 10;
@@ -218,7 +370,7 @@ public class AdjacencyMatrixGraph<TKey, TVertex> {
     /**
      * The precision of the floating point of the weights inside the `toString()` method
      */
-    private int weightPrecision = 2;
+    private int weightPrecision = 0;
 
     public void setWeightPrecision(int weightPrecision) {
         this.weightPrecision = weightPrecision;
