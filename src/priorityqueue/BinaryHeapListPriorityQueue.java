@@ -56,7 +56,7 @@ public class BinaryHeapListPriorityQueue<T extends Comparable<T>> {
     }
 
     public T peek() {
-        return items.get(0);
+        return items.getFirst();
     }
 
     private int getLeftChildIndex(int index) {
@@ -95,9 +95,31 @@ public class BinaryHeapListPriorityQueue<T extends Comparable<T>> {
         return items.isEmpty();
     }
 
-    public void changePriority(T item, boolean priorityIncreased) {
+    /**
+     * Single-method interface for the item updater parameter of the `changePriority()` method
+     * to pass down a lambda as the argument.
+     *
+     * @param <T> Data type of the item to update.
+     */
+    public interface ItemUpdater<T> {
+        /**
+         * Returns an updated clone of the item whose priority we want to change.
+         *
+         * @param item The item whose priority we want to change
+         * @return The updated clone
+         */
+        T updateWithClone(T item);
+    }
+
+    public void changePriority(T item, ItemUpdater<T> itemUpdater) {
         int index = items.indexOf(item);
-        if (priorityIncreased) siftUp(index);
-        else siftDown(index);
+        T itemClone = itemUpdater.updateWithClone(item);
+        boolean priorityIncreased = orderingStrategy.shouldPrecede(itemClone, item);
+        items.set(index, itemClone);
+        if (priorityIncreased) {
+            siftUp(index);
+        } else {
+            siftDown(index);
+        }
     }
 }
