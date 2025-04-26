@@ -31,6 +31,15 @@ public abstract class Graph<TKey, TVertex> {
     protected int order;
 
     /**
+     * Getter for the property of `order`.
+     *
+     * @return Value of the property `order`
+     */
+    public int getOrder() {
+        return order;
+    }
+
+    /**
      * Map of the vertex entries' keys to their indices in the list of the vertices entries `entries`.
      */
     protected HashMap<TKey, Integer> entriesKeyToIndexMap;
@@ -69,4 +78,16 @@ public abstract class Graph<TKey, TVertex> {
      * @return The weight of the edge.
      */
     public abstract double getEdgeWeight(int source, int destination);
+
+    /**
+     * Traverses a graph from a given source vertex using a given graph traversal strategy.
+     *
+     * @param sourceKey         The key of the source vertex
+     * @param traversalStrategy The graph traversal strategy to use
+     * @return Linked list of the visited vertices entries ordered by order of traversal
+     */
+    public LinkedList<VertexEntry<TKey, TVertex>> traverse(TKey sourceKey, GraphTraversalStrategy<TKey, TVertex> traversalStrategy) {
+        int source = entriesKeyToIndexMap.get(sourceKey);
+        return traversalStrategy.traverse(this, source);
+    }
 }
