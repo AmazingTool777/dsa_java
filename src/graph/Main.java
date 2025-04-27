@@ -97,7 +97,7 @@ public class Main {
                     graphTraversalStrategy = new BreadthFirstSearchStrategy<>();
                 }
 
-                System.out.println("Enter the key of the source vertex:");
+                System.out.print("Enter the key of the source vertex: ");
                 TKey sourceKey = promptVertexKey();
                 LinkedList<VertexEntry<TKey, TVertex>> visitedEntries = graph.traverse(sourceKey, graphTraversalStrategy);
                 System.out.println();
@@ -117,14 +117,84 @@ public class Main {
             } while (endOfTaskInput == 1);
         }
 
+        private String getShortestPathConsoleCompoundWeight(ShortestPathResult<TKey, TVertex> shortestPathResult) {
+            String consoleCompoundWeight;
+            if (shortestPathResult.compoundWeight() == Double.POSITIVE_INFINITY) {
+                consoleCompoundWeight = "+Infinity (Unreachable)";
+            } else if (shortestPathResult.compoundWeight() == Double.NEGATIVE_INFINITY) {
+                consoleCompoundWeight = "-Infinity (Negative cycle)";
+            } else {
+                consoleCompoundWeight = String.format("%.0f", shortestPathResult.compoundWeight());
+            }
+            return consoleCompoundWeight;
+        }
+
+        private void runShortestPathProgram() {
+            int endOfTaskInput;
+
+            do {
+                System.out.print("Enter the source vertex's key: ");
+                TKey sourceKey = promptVertexKey();
+                System.out.println();
+
+                ShortestPathStrategy<TKey, TVertex> shortestPathStrategy = new MooreDijkstraStrategy<>();
+                HashMap<TKey, ShortestPathResult<TKey, TVertex>> shortestPathsResultsByDestination =
+                        graph.findShortestPaths(sourceKey, shortestPathStrategy);
+
+                System.out.println("Shortest paths from " + sourceKey + ":");
+                for (VertexEntry<TKey, TVertex> destinationEntry : graph.getEntries()) {
+                    TKey key = destinationEntry.key();
+                    ShortestPathResult<TKey, TVertex> shortestPathResult = shortestPathsResultsByDestination.get(key);
+                    String consoleCompoundWeight = getShortestPathConsoleCompoundWeight(shortestPathResult);
+                    System.out.print(key + " (" + consoleCompoundWeight + "): ");
+                    int prevEntryIndex = -1;
+                    for (VertexEntry<TKey, TVertex> successorEntry : shortestPathResult.entries()) {
+                        int successorEntryIndex = graph.getEntriesKeyToIndexMap().get(successorEntry.key());
+                        if (prevEntryIndex >= 0) {
+                            double weightFromPrevEntry = graph.getEdgeWeight(prevEntryIndex, successorEntryIndex);
+                            System.out.printf(" (%.0f) -> ", weightFromPrevEntry);
+                        }
+                        System.out.print(successorEntry.key());
+                        prevEntryIndex = successorEntryIndex;
+                    }
+                    System.out.println();
+                }
+                System.out.println();
+
+                endOfTaskInput = endOfTaskPrompt();
+            } while (endOfTaskInput == 1);
+        }
+
         /**
          * Main graph program
          */
         public void run() {
-            System.out.println("Graph:");
-            System.out.println(graph);
-            System.out.println();
-            runGraphTraversal();
+            int endOfTaskInput;
+
+            do {
+                System.out.println("Graph:");
+                System.out.println(graph);
+                System.out.println();
+
+                int operationInput;
+                do {
+                    System.out.print("""
+                            Which operation would like to perform on the graph?
+                            1. Graph traversal
+                            2. Shortest path finding
+                            Your choice:\s""");
+                    operationInput = sc.nextInt();
+                } while (operationInput < 1 || operationInput > 2);
+                System.out.println();
+
+                if (operationInput == 1) {
+                    runGraphTraversal();
+                } else {
+                    runShortestPathProgram();
+                }
+
+                endOfTaskInput = endOfTaskPrompt();
+            } while (endOfTaskInput == 1);
         }
     }
 
@@ -182,6 +252,7 @@ public class Main {
                 System.out.println("4. Graph 4");
                 System.out.print("Your choice: ");
                 graphInput = sc.nextInt();
+                sc.nextLine();
 
                 String graphImplementationInput;
                 do {
@@ -190,9 +261,8 @@ public class Main {
                     System.out.println("a. Adjacency list");
                     System.out.println("b. Adjacency matrix");
                     System.out.print("Your choice: ");
-                    graphImplementationInput = sc.next();
+                    graphImplementationInput = sc.nextLine();
                 } while (!graphImplementationInput.equals("a") && !graphImplementationInput.equals("b"));
-                sc.nextLine();
                 System.out.println();
 
                 switch (graphInput) {

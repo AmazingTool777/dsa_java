@@ -52,20 +52,21 @@ public class AdjacencyListGraph<TKey, TVertex> extends Graph<TKey, TVertex> {
         // Building the successors adjacency list and the predecessors adjacency list
         successorsLists = new ArrayList<>(Collections.nCopies(order, null));
         predecessorsLists = new ArrayList<>(Collections.nCopies(order, null));
-        for (Map.Entry<TKey, LinkedList<EdgeToVertex<TKey>>> edgesFromSourceEntry : edgesBuilder.getEdgesBySource().entrySet()) {
-            TKey sourceKey = edgesFromSourceEntry.getKey();
-            int source = entriesKeyToIndexMap.get(sourceKey);
-            LinkedList<EdgeToVertex<TKey>> edgesFromSource = edgesFromSourceEntry.getValue();
+        for (VertexEntry<TKey, TVertex> entry : entries) {
+            int source = entriesKeyToIndexMap.get(entry.key());
+            LinkedList<EdgeToVertex<TKey>> edgesFromSource = edgesBuilder.getEdgesBySource().get(entry.key());
             LinkedList<ListEdgeToVertex> successorsList = new LinkedList<>(), predecessorsList;
-            for (EdgeToVertex<TKey> edge : edgesFromSource) {
-                int destination = entriesKeyToIndexMap.get(edge.destinationVertex());
-                successorsList.add(new ListEdgeToVertex(destination, edge.weight()));
-                predecessorsList = predecessorsLists.get(destination);
-                if (predecessorsList == null) {
-                    predecessorsList = new LinkedList<>();
-                    predecessorsLists.set(destination, predecessorsList);
+            if (edgesFromSource != null) {
+                for (EdgeToVertex<TKey> edge : edgesFromSource) {
+                    int destination = entriesKeyToIndexMap.get(edge.destinationVertex());
+                    successorsList.add(new ListEdgeToVertex(destination, edge.weight()));
+                    predecessorsList = predecessorsLists.get(destination);
+                    if (predecessorsList == null) {
+                        predecessorsList = new LinkedList<>();
+                        predecessorsLists.set(destination, predecessorsList);
+                    }
+                    predecessorsList.add(new ListEdgeToVertex(source, edge.weight()));
                 }
-                predecessorsList.add(new ListEdgeToVertex(source, edge.weight()));
             }
             successorsLists.set(source, successorsList);
         }

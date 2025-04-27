@@ -44,6 +44,15 @@ public abstract class Graph<TKey, TVertex> {
      */
     protected HashMap<TKey, Integer> entriesKeyToIndexMap;
 
+    /**
+     * Getter for the property of `entriesKeyToIndexMap`.
+     *
+     * @return Value of the property `entriesKeyToIndexMap`
+     */
+    public HashMap<TKey, Integer> getEntriesKeyToIndexMap() {
+        return entriesKeyToIndexMap;
+    }
+
     public Graph(ArrayList<VertexEntry<TKey, TVertex>> entries) {
         this.entries = entries;
         order = entries.size();
@@ -89,5 +98,10 @@ public abstract class Graph<TKey, TVertex> {
     public LinkedList<VertexEntry<TKey, TVertex>> traverse(TKey sourceKey, GraphTraversalStrategy<TKey, TVertex> traversalStrategy) {
         int source = entriesKeyToIndexMap.get(sourceKey);
         return traversalStrategy.traverse(this, source);
+    }
+
+    public HashMap<TKey, ShortestPathResult<TKey, TVertex>> findShortestPaths(TKey sourceKey, ShortestPathStrategy<TKey, TVertex> shortestPathStrategy) {
+        int source = entriesKeyToIndexMap.get(sourceKey);
+        return shortestPathStrategy.findShortestPaths(this, source);
     }
 }
