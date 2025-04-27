@@ -18,8 +18,8 @@ import java.util.List;
 public class MooreDijkstraStrategy<TKey, TVertex> extends ShortestPathStrategy<TKey, TVertex> {
     @Override
     protected double[] calculateShortestPathsCompoundWeights(Graph<TKey, TVertex> graph, int source) {
-        // Array of the shortest path progress to each vertex from the source
-        // Each index maps to each index of the vertex entries
+        // Array of the shortest path progress to each vertex from the source.
+        // Each index maps to each index of the vertex entries.
         PathToVertexProgress[] pathsToVerticesProgress = new PathToVertexProgress[graph.getOrder()];
 
         // Initialization of the paths progress
@@ -35,8 +35,8 @@ public class MooreDijkstraStrategy<TKey, TVertex> extends ShortestPathStrategy<T
                 new MinOrdering<>()
         );
 
-        // Booleans telling which vertices have already been visited or not
-        // Each index maps to each index of the vertex entries
+        // Booleans telling which vertices have already been visited or not.
+        // Each index maps to each index of the vertex entries.
         boolean[] visited = new boolean[graph.getOrder()];
 
         while (!toExplore.isEmpty()) {
@@ -67,9 +67,9 @@ public class MooreDijkstraStrategy<TKey, TVertex> extends ShortestPathStrategy<T
             }
         }
 
-        // Mapping the shortest path's progress to the expected return type of the method `double[]`
-        // Array of the compound weights of the shortest paths to all vertices
-        // Each index maps to each index of the vertex entries
+        // Mapping the shortest path's progress to the expected return type of the method `double[]`.
+        // Array of the compound weights of the shortest paths to all vertices.
+        // Each index maps to each index of the vertex entries.
         double[] shortestPathsCompoundWeights = new double[graph.getOrder()];
         for (int i = 0; i < graph.getOrder(); i++) {
             shortestPathsCompoundWeights[i] = pathsToVerticesProgress[i].compoundWeight();
