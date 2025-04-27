@@ -100,6 +100,13 @@ public abstract class Graph<TKey, TVertex> {
         return traversalStrategy.traverse(this, source);
     }
 
+    /**
+     * Finds the shortest paths from a given source vertex using a given shortest path strategy.
+     *
+     * @param sourceKey            The key of the source vertex
+     * @param shortestPathStrategy The shortest paths finder strategy to use
+     * @return Map of the shortest paths results by destination vertex key
+     */
     public HashMap<TKey, ShortestPathResult<TKey, TVertex>> findShortestPaths(TKey sourceKey, ShortestPathStrategy<TKey, TVertex> shortestPathStrategy) {
         int source = entriesKeyToIndexMap.get(sourceKey);
         return shortestPathStrategy.findShortestPaths(this, source);
