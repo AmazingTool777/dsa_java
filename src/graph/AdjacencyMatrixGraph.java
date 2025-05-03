@@ -1,9 +1,6 @@
 package graph;
 
-import graph.common.EdgeToVertex;
-import graph.common.EdgesBuilder;
-import graph.common.Graph;
-import graph.common.VertexEntry;
+import graph.common.*;
 
 import java.util.*;
 
@@ -56,6 +53,58 @@ public class AdjacencyMatrixGraph<TKey, TVertex> extends Graph<TKey, TVertex> {
             }
         }
         return predecessors;
+    }
+
+    /**
+     * Edges iterator of the adjacency matrix graph.
+     */
+    private class AdjacencyMatrixEdgesIterator implements EdgesIterator {
+        /**
+         * The next index pointing to a valid edge in the matrix.
+         */
+        private int nextIndex;
+
+        /**
+         * The total count of indices to be iterated over by the index `nextIndex`.
+         * n = order²
+         */
+        private final int n;
+
+        public AdjacencyMatrixEdgesIterator() {
+            nextIndex = -1;
+            n = order * order;
+            // Looking for the first valid `nextIndex` value
+            int source, destination;
+            do {
+                nextIndex++;
+                source = nextIndex / order;
+                destination = nextIndex % order;
+            } while (nextIndex < n && matrix[source][destination] == 0);
+        }
+
+        @Override
+        public boolean hasNext() {
+            return nextIndex < n;
+        }
+
+        @Override
+        public EdgesIteratorItem next() {
+            if (!hasNext()) return null;
+            int source = nextIndex / order;
+            int destination = nextIndex % order;
+            EdgesIteratorItem edge = new EdgesIteratorItem(source, destination, matrix[source][destination]);
+            do {
+                nextIndex++;
+                source = nextIndex / order;
+                destination = nextIndex % order;
+            } while (nextIndex < n && matrix[source][destination] == 0);
+            return edge;
+        }
+    }
+
+    @Override
+    public EdgesIterator createEdgesIterator() {
+        return new AdjacencyMatrixEdgesIterator();
     }
 
     @Override

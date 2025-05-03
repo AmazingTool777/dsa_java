@@ -50,8 +50,11 @@ public class MooreDijkstraStrategy<TKey, TVertex> extends ShortestPathStrategy<T
                 if (visited[successor]) {
                     continue;
                 }
-                double compoundWeightFromCurrentPathToSuccessor = currentPath.compoundWeight()
-                        + graph.getEdgeWeight(currentPath.entryIndex(), successor);
+                double weightToSuccessor = graph.getEdgeWeight(currentPath.entryIndex(), successor);
+                if (weightToSuccessor < 0) {
+                    throw new RuntimeException("Cannot run Moore Dijkstra's shortest path algorithm on a graph with negative weights");
+                }
+                double compoundWeightFromCurrentPathToSuccessor = currentPath.compoundWeight() + weightToSuccessor;
                 // Relaxation of the successor's progress' compound weight
                 if (compoundWeightFromCurrentPathToSuccessor < pathsToVerticesProgress[successor].compoundWeight()) {
                     // Update of the priority of the successor's progress

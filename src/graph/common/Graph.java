@@ -88,6 +88,8 @@ public abstract class Graph<TKey, TVertex> {
      */
     public abstract double getEdgeWeight(int source, int destination);
 
+    public abstract EdgesIterator createEdgesIterator();
+
     /**
      * Traverses a graph from a given source vertex using a given graph traversal strategy.
      *

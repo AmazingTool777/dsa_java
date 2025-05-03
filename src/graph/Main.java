@@ -133,11 +133,24 @@ public class Main {
             int endOfTaskInput;
 
             do {
+                int shortestPathAlgoInput;
+                do {
+                    System.out.print("""
+                            Which shortest path finder algorithm to use?
+                            1. Moore Dijkstra
+                            2. Bellman-Ford
+                            Your choice:\s""");
+                    shortestPathAlgoInput = sc.nextInt();
+                } while (shortestPathAlgoInput < 1 || shortestPathAlgoInput > 2);
+                System.out.println();
+
                 System.out.print("Enter the source vertex's key: ");
                 TKey sourceKey = promptVertexKey();
                 System.out.println();
 
-                ShortestPathStrategy<TKey, TVertex> shortestPathStrategy = new MooreDijkstraStrategy<>();
+                ShortestPathStrategy<TKey, TVertex> shortestPathStrategy = shortestPathAlgoInput == 1
+                        ? new MooreDijkstraStrategy<>()
+                        : new BellmanFordStrategy<>();
                 HashMap<TKey, ShortestPathResult<TKey, TVertex>> shortestPathsResultsByDestination =
                         graph.findShortestPaths(sourceKey, shortestPathStrategy);
 

@@ -1,9 +1,6 @@
 package graph;
 
-import graph.common.EdgeToVertex;
-import graph.common.EdgesBuilder;
-import graph.common.Graph;
-import graph.common.VertexEntry;
+import graph.common.*;
 
 import java.util.*;
 
@@ -81,6 +78,58 @@ public class AdjacencyListGraph<TKey, TVertex> extends Graph<TKey, TVertex> {
             predecessors.add(edge.destination());
         }
         return predecessors;
+    }
+
+    /**
+     * Edges iterator of the adjacency list graph.
+     */
+    private class AdjacencyListEdgesIterator implements EdgesIterator {
+        /**
+         * Index of the current source vertex entry
+         */
+        private int source;
+
+        /**
+         * Native linked iterator of the current successors edges originating from the current source vertex.
+         */
+        private Iterator<ListEdgeToVertex> successorsIterator;
+
+        public AdjacencyListEdgesIterator() {
+            source = 0;
+            // Looking for the first successors iterator originating from a source vertex
+            do {
+                if (source < order) {
+                    successorsIterator = successorsLists.get(source).iterator();
+                    if (!successorsIterator.hasNext()) {
+                        source++;
+                    }
+                } else {
+                    successorsIterator = null;
+                }
+            } while (source < order && !successorsLists.get(source).iterator().hasNext());
+        }
+
+        @Override
+        public boolean hasNext() {
+            return successorsIterator != null;
+        }
+
+        @Override
+        public EdgesIteratorItem next() {
+            if (successorsIterator == null) return null;
+            ListEdgeToVertex edgeToVertex = successorsIterator.next();
+            EdgesIteratorItem edge = new EdgesIteratorItem(source, edgeToVertex.destination(), edgeToVertex.weight());
+            while (source < order && !successorsIterator.hasNext()) {
+                source++;
+                successorsIterator = source < order ? successorsLists.get(source).iterator() : null;
+            }
+            return edge;
+        }
+    }
+
+    @Override
+    public EdgesIterator createEdgesIterator() {
+        return new AdjacencyListEdgesIterator();
     }
 
     @Override
